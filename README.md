@@ -285,7 +285,7 @@ responsible for how you use it.
 
 ## Attribution
 
-Created by **ashsawtech** — https://github.com/ashsawtech/igrapiweb · Telegram: https://t.me/ashsawtech
+Created by **ashsawtech** — Telegram [@ashsawtech](https://t.me/ashsawtech) · https://github.com/ashsawtech/igrapiweb
 
 The author credit in `igrapiweb/_attrib.py` is required by the license and is enforced at import; it must
 be kept intact.
