@@ -1,21 +1,21 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "igrapiweb"
-version = "1.0.0"
+version = "1.0.1"
 description = "A pure-Python Instagram Web client — no browser, no emulator."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "ashsawtech", email = "ashsawtech@github.com" }]
 maintainers = [{ name = "ashsawtech" }]
 keywords = ["instagram", "web", "client", "realtime", "direct-messages"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Communications :: Chat",

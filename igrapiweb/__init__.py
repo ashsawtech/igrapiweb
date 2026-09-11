@@ -2,7 +2,7 @@
 """A pure-Python Instagram Web client driven by a sessionid cookie: no browser, no emulator."""
 from __future__ import annotations
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 try:
     from ._attrib import AUTHOR as __author__, CREDIT as __credits__, verify as _verify_attribution, banner as _banner
