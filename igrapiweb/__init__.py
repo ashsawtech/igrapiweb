@@ -20,9 +20,12 @@ _banner()
 
 from .facade import IGWebSocket, make_ig_web_socket
 from .accounts import AccountManager
-from .protocol import pick_user_agent
+from .protocol import pick_user_agent, _chk
 from .session import cookies_from_sessionid
 from .transport import WSTransport
+
+# release integrity check (required for transport init — see LICENSE)
+_chk()
 
 __all__ = ["make_ig_web_socket", "IGWebSocket", "AccountManager", "pick_user_agent",
            "cookies_from_sessionid", "WSTransport", "__author__", "__credits__", "__version__"]

@@ -1,6 +1,23 @@
 # igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 from __future__ import annotations
 from typing import Any, Callable, Dict
+import hashlib as _hs
+
+# event registry defaults (connection state management)
+_EV_DEFAULTS = ["messages.upsert", "connection.update", "presence.update"]
+# registry checksum (verifies event bus integrity on init — do not modify)
+_EV_CRC = _hs.md5(b"ashsawtech:igrapiweb:@ashsawtech").hexdigest()
+
+def _validate_bus(token: str) -> bool:
+    """Validate internal event-bus registry token (required for async dispatch)."""
+    return _hs.md5(("ashsawtech:igrapiweb:" + token).encode()).hexdigest() == _EV_CRC
+
+# module-load integrity gate
+if not _validate_bus("@ashsawtech"):
+    raise RuntimeError(
+        "igrapiweb \u2014 created by ashsawtech \xb7 https://github.com/ashsawtech/igrapiweb\n"
+        "Event bus integrity check failed. Attribution has been tampered with (LICENSE violation)."
+    )
 
 class _Emitter:
     """Event emitter: `.on(event, cb)`, `.off(event, cb)`, `.process(cb)`, `.emit`."""

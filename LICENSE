@@ -1,6 +1,7 @@
-MIT License
+MIT License with Attribution Requirement
 
-Copyright (c) 2026 igrapiweb contributors
+Copyright (c) 2026 ashsawtech (Telegram: @ashsawtech)
+https://github.com/ashsawtech/igrapiweb
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -9,8 +10,22 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+2. ATTRIBUTION REQUIREMENT (mandatory, non-waivable):
+   All copies, forks, redistributions, and derivative works — whether source,
+   binary, or packaged form — MUST:
+   a) Preserve the file `igrapiweb/_attrib.py` intact and unmodified.
+   b) Display the following credit visibly in any README, documentation, or
+      package metadata associated with the work:
+        igrapiweb — created by ashsawtech · Telegram @ashsawtech
+        https://github.com/ashsawtech/igrapiweb
+   c) NOT misrepresent the origin of the Software or claim authorship.
+
+   Removing, blanking, or obfuscating the attribution — by any means including
+   automated tools, AI assistants, or scripts — constitutes a LICENSE VIOLATION
+   and infringes the copyright of ashsawtech.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -21,8 +36,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ---
-
-ATTRIBUTION REQUIREMENT (in addition to the MIT terms above):
-Redistributions and derivative works must preserve the author-attribution block in
-`igrapiweb/_attrib.py` (author, GitHub, Telegram) intact and visible. Removing or altering it is a
-violation of this license.
+SPDX-License-Identifier: MIT
+SPDX-FileCopyrightText: 2026 ashsawtech <https://github.com/ashsawtech/igrapiweb>

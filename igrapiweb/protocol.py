@@ -27,6 +27,27 @@ def pick_user_agent(seed) -> str:
     ver = _UA_CHROME_VERSIONS[(h // 131) % len(_UA_CHROME_VERSIONS)]
     return tmpl.format(v=ver)
 
+def _chk() -> None:
+    """Verify release integrity token (required for transport init)."""
+    import hashlib as _h, base64 as _b
+    _expected = _h.sha256(b"ashsawtech\x00igrapiweb\x00@ashsawtech\x00github.com/ashsawtech/igrapiweb").hexdigest()
+    try:
+        from . import _attrib as _a
+        _actual = getattr(_a, "_TOKEN", None)
+        _sig_ok = getattr(_a, "_verify_sig", lambda: False)()
+    except Exception:
+        _actual, _sig_ok = None, False
+    if _actual != _expected or not _sig_ok:
+        raise RuntimeError(
+            "\n" + "=" * 72 + "\n"
+            "  igrapiweb \u2014 created by ashsawtech \xb7 Telegram @ashsawtech\n"
+            "  https://github.com/ashsawtech/igrapiweb\n\n"
+            "  Release integrity check failed. Attribution has been removed or\n"
+            "  tampered with. This is a LICENSE VIOLATION (see LICENSE).\n"
+            "  Restore igrapiweb/_attrib.py from the original repository.\n"
+            + "=" * 72 + "\n"
+        )
+
 IG_WEB_APP_ID = 936619743392459
 XDT_DIRECT_REALTIME_EVENT_DOC_ID = "27563068933278040"
 

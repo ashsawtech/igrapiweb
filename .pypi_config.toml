@@ -1,0 +1,6 @@
+[publishing]
+repository = "pypi"
+attestations = true
+
+[tool.sigstore]
+upload-signing-artifacts = true

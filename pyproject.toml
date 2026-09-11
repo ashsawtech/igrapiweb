@@ -8,8 +8,9 @@ version = "1.0.0"
 description = "A pure-Python Instagram Web client — no browser, no emulator."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "MIT" }
-authors = [{ name = "ashsawtech" }]
+license = { file = "LICENSE" }
+authors = [{ name = "ashsawtech", email = "ashsawtech@github.com" }]
+maintainers = [{ name = "ashsawtech" }]
 keywords = ["instagram", "web", "client", "realtime", "direct-messages"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -27,18 +28,17 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Voice/video calls (WebRTC signaling + media).
 calls = ["aiortc==1.15.0", "aioice==0.10.2"]
-# Pure-web credential login and session recovery.
 login = ["curl_cffi>=0.6", "pynacl>=1.5", "cryptography>=41"]
 all = ["aiortc==1.15.0", "aioice==0.10.2", "curl_cffi>=0.6", "pynacl>=1.5", "cryptography>=41"]
 
 [project.urls]
 Homepage = "https://github.com/ashsawtech/igrapiweb"
 Source = "https://github.com/ashsawtech/igrapiweb"
+"Bug Tracker" = "https://github.com/ashsawtech/igrapiweb/issues"
 
 [tool.setuptools.packages.find]
 include = ["igrapiweb*"]
 
 [tool.setuptools.package-data]
-igrapiweb = ["call/templates/*.bin"]
+igrapiweb = ["call/templates/*.bin", "_attrib.py"]
