@@ -17,3 +17,7 @@ env/
 # Session material — never commit
 *.session
 secrets/
+
+# MkDocs build output
+/site/
+/docs/
