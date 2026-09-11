@@ -1,5 +1,9 @@
 # igrapiweb
 
+![Python](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
+[![Docs](https://img.shields.io/badge/docs-latest-blue)](https://ashsawtech.github.io/igrapiweb/)
+
 A pure-Python client for Instagram Web. It speaks Instagram's realtime WebSocket channels and private web
 API directly from a logged-in `sessionid` cookie — no browser, no Selenium, no emulator. Give it a
 session and it stays connected, streams events, and exposes the messaging, social, feed, story, and
