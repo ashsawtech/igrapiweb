@@ -24,7 +24,7 @@ from .protocol import pick_user_agent, _chk
 from .session import cookies_from_sessionid
 from .transport import WSTransport
 
-# release integrity check (required for transport init — see LICENSE)
+# attribution/integrity check (see LICENSE)
 _chk()
 
 __all__ = ["make_ig_web_socket", "IGWebSocket", "AccountManager", "pick_user_agent",

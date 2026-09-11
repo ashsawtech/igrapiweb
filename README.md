@@ -268,8 +268,8 @@ With `keep_alive` on, the watchdog calls `recover_session()` after repeated auth
 ## Requirements
 
 - Python 3.9+
-- `requests`, `websocket-client`, `python-socks` (installed automatically)
-- Optional: `calls` (aiortc, aioice), `login` (curl_cffi, pynacl, cryptography)
+- `requests`, `websocket-client`, `python-socks`, `cryptography` (installed automatically)
+- Optional: `calls` (aiortc, aioice), `login` (curl_cffi, pynacl)
 - `ffmpeg` on `PATH` for `send_voice` (transcodes to opus and reads the waveform); pass an `.ogg`/`.opus`
   file with `waveform=` to skip it
 

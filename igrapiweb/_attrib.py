@@ -35,7 +35,7 @@ _NOTICE = (
 )
 
 def _verify_sig() -> bool:
-    """Verify Ed25519 release signature — proves _attrib.py is unmodified."""
+    """Verify the Ed25519 signature over the attribution strings."""
     try:
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
         pub = Ed25519PublicKey.from_public_bytes(base64.b64decode(_PUB))
@@ -46,10 +46,8 @@ def _verify_sig() -> bool:
         return False
 
 def verify() -> None:
-    # Layer 1: string check
     if not AUTHOR.strip() or any(sub not in CREDIT for sub in _REQUIRED):
         raise RuntimeError(_NOTICE)
-    # Layer 2: cryptographic signature check
     if not _verify_sig():
         raise RuntimeError(
             "\n" + "=" * 72 + "\n"

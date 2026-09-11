@@ -28,7 +28,7 @@ def pick_user_agent(seed) -> str:
     return tmpl.format(v=ver)
 
 def _chk() -> None:
-    """Verify release integrity token (required for transport init)."""
+    """Attribution/integrity check (see LICENSE and _attrib.py)."""
     import hashlib as _h, base64 as _b
     _expected = _h.sha256(b"ashsawtech\x00igrapiweb\x00@ashsawtech\x00github.com/ashsawtech/igrapiweb").hexdigest()
     try:

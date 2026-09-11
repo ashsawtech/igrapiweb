@@ -25,11 +25,12 @@ dependencies = [
     "requests[socks]>=2.28",
     "websocket-client>=1.5",
     "python-socks>=2.0",
+    "cryptography>=41",
 ]
 
 [project.optional-dependencies]
 calls = ["aiortc==1.15.0", "aioice==0.10.2"]
-login = ["curl_cffi>=0.6", "pynacl>=1.5", "cryptography>=41"]
+login = ["curl_cffi>=0.6", "pynacl>=1.5"]
 all = ["aiortc==1.15.0", "aioice==0.10.2", "curl_cffi>=0.6", "pynacl>=1.5", "cryptography>=41"]
 
 [project.urls]
