@@ -4,10 +4,13 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 [![Docs](https://img.shields.io/badge/docs-latest-blue)](https://ashsawtech.github.io/igrapiweb/)
 
-A pure-Python client for Instagram Web. It speaks Instagram's realtime WebSocket channels and private web
-API directly from a logged-in `sessionid` cookie — no browser, no Selenium, no emulator. Give it a
-session and it stays connected, streams events, and exposes the messaging, social, feed, story, and
-calling surfaces of the web app.
+**A fast, pure-Python client for Instagram Web.** Log in with a browser `sessionid`, and igrapiweb holds a
+live connection to Instagram's realtime channels and drives the messaging, social, feed, story, and calling
+features of the web app — straight from Python. No browser, no Selenium, no Android emulator, no mobile app.
+
+Give it a session and it behaves like a persistent client: it stays connected, streams events as they
+happen, reconnects on its own when a pipe drops, and refreshes its short-lived auth so it keeps running
+unattended.
 
 ```python
 from igrapiweb import make_ig_web_socket
@@ -23,10 +26,47 @@ sock.connect()
 sock.listen()
 ```
 
-Receive rides the DGW *lightspeed* channel the website itself uses — each DM is pushed down and acked
-per frame, so nothing is dropped. Sends go over the same web GraphQL mutation the browser fires (or the
-WebSocket send channel while it's up), and follow/like/comment/story actions call the same
-`www.instagram.com` private endpoints the site does.
+## Features
+
+- **Pure web, pure Python.** Talks to `www.instagram.com` the way the site does. Nothing to drive, nothing
+  to emulate — just a session and a socket.
+- **Lossless realtime receive.** Direct messages arrive on the same DGW *lightspeed* channel the website
+  uses, acked frame by frame, so a burst of messages is delivered in order and nothing is dropped.
+- **Send the way the browser sends.** Messages go over the web GraphQL mutation the site fires, or down the
+  open WebSocket pipe while it's up.
+- **Full direct messaging.** Text, replies and quotes, photos and video, voice notes, unsend, edit, read
+  receipts, and typing indicators.
+- **Voice notes without a browser.** Clips are uploaded and sent through the same web flow the app uses,
+  waveform and all, in pure Python.
+- **Groups.** Create, rename, add and remove members, promote and demote admins, set nicknames — with a
+  create-time diagnostic that tells you exactly which invitee blocked a group from forming.
+- **Social graph.** Look up profiles, follow and unfollow, follow back, accept or reject requests, read
+  friendship status, and change your profile photo.
+- **Feed and reels.** Media info, a user's reels, their most-viewed reel, comments, like/unlike/save,
+  comment, watch or download, and share into a thread.
+- **Stories.** The tray, a user's story, add/like/delete, and the viewer list.
+- **Voice and video calls.** Over WebRTC — place, answer, and decline, with audio in and out and optional
+  recording.
+- **Many accounts, cleanly separated.** Each account gets its own session, proxy, tokens, sockets, and a
+  stable, distinct User-Agent, so accounts don't look linked.
+- **Built to stay up.** Keepalive heartbeats, auto-reconnect with backoff, message-cursor resume, session
+  persistence to disk, and web re-login recovery when a session rotates.
+
+## How igrapiweb talks to Instagram
+
+igrapiweb only speaks to endpoints the Instagram website itself uses. Under the hood that's three surfaces:
+
+- **Realtime receive.** Incoming DMs, receipts, typing, and presence come down a realtime channel. The
+  default is DGW *lightspeed* (the lossless push the current website uses); an older Iris channel is
+  available as a fallback, and you can run both.
+- **Realtime / GraphQL send.** Outgoing messages go over the WebSocket send channel while the pipe is open,
+  or over the web GraphQL mutation the browser fires — the same request, same document id.
+- **Private web API for actions.** Follows, likes, comments, stories, and profile edits call the
+  `www.instagram.com` endpoints the site calls from your logged-in session.
+
+Because these are web flows, an authenticated session is needed for almost everything, and Instagram can
+change or throttle any of them without notice — independently of this library. igrapiweb tracks the
+current web behaviour, but treat the web surface as something that can shift under you.
 
 ## Installation
 
@@ -34,21 +74,21 @@ WebSocket send channel while it's up), and follow/like/comment/story actions cal
 pip install igrapiweb
 ```
 
-The core (messaging, groups, presence, social graph, feed, stories) needs only `requests` and
-`websocket-client`. Optional features pull in extra dependencies:
+The core — messaging, groups, presence, the social graph, feed, and stories — needs only `requests`,
+`websocket-client`, `python-socks`, and `cryptography`. Two features pull in extra dependencies:
 
 ```bash
-pip install "igrapiweb[calls]"   # voice/video calls
+pip install "igrapiweb[calls]"   # voice/video calls (WebRTC)
 pip install "igrapiweb[login]"   # username/password login
 pip install "igrapiweb[all]"
 ```
 
-Importing the library never requires the extras; a call method or a credential login raises a clear
-error if its extra is missing.
+Importing the library never needs the extras. A call method or a credential login raises a clear error if
+its extra is missing, telling you exactly what to install.
 
 ## Authentication
 
-`make_ig_web_socket(...)` accepts one of:
+`make_ig_web_socket(...)` takes one of three things:
 
 ```python
 sock = make_ig_web_socket(sessionid="1234%3Aabcd%3A...")                       # a browser sessionid
@@ -56,22 +96,23 @@ sock = make_ig_web_socket(cookies={"sessionid": "...", "ds_user_id": "..."})   #
 sock = make_ig_web_socket(username="user", password="secret")                  # login (needs [login])
 ```
 
-To get a `sessionid`, sign in at instagram.com, open the browser dev tools → Application → Cookies →
-`https://www.instagram.com`, and copy the `sessionid` value. Treat it as a full credential.
+To get a `sessionid`: sign in at instagram.com, open the browser dev tools → Application → Cookies →
+`https://www.instagram.com`, and copy the `sessionid` value. Treat it as a full credential — it grants
+access to the account.
 
-Register resolvers before a credential login if the account is gated:
+If the account is gated behind 2FA or a checkpoint, register the resolvers before a credential login:
 
 ```python
 sock.set_twofa_resolver(lambda two_factor_id: input("2FA code: "))
 sock.set_challenge_resolver(lambda ctx: input("challenge code: "))
 ```
 
-Pass `proxy="socks5h://127.0.0.1:40000"` to route the session through a proxy matching its region.
+Route a session through a proxy that matches the account's region with `proxy="socks5h://127.0.0.1:40000"`.
 
 ## Receiving events
 
-`connect()` opens the realtime pipes on background threads and returns immediately. Subscribe on
-`sock.ev`, which works as a decorator or a direct call:
+`connect()` opens the realtime pipes on background threads and returns right away. Subscribe on `sock.ev`,
+which works as a decorator or a plain call:
 
 ```python
 @sock.ev.on("messages.upsert")
@@ -85,7 +126,7 @@ sock.connect()
 sock.listen()   # blocks; Ctrl-C disconnects cleanly
 ```
 
-`sock.ev.off(event, handler)` unsubscribes; `sock.ev.process(handler)` receives every event as
+`sock.ev.off(event, handler)` unsubscribes, and `sock.ev.process(handler)` receives every event as
 `(event, payload)`. Incoming messages arrive in a stable shape:
 
 ```python
@@ -97,13 +138,13 @@ sock.listen()   # blocks; Ctrl-C disconnects cleanly
 | Event | Fires when |
 | --- | --- |
 | `connection.update` | connection state changes (`connecting` / `open` / `recovering` / `close`) |
-| `connection.heartbeat` | keepalive beat, carrying a `health()` snapshot |
+| `connection.heartbeat` | a keepalive beat, carrying a `health()` snapshot |
 | `creds.update` | the user is identified, or re-auth is needed |
 | `messages.upsert` | a direct message arrives |
 | `messages.update` | a message is edited |
 | `messages.delete` | a message is unsent |
 | `message-receipt.update` | a participant's read receipt advances |
-| `presence.update` | a contact starts/stops typing or changes presence |
+| `presence.update` | a contact starts or stops typing, or changes presence |
 | `send.ack` / `send.fallback` | a send is acked / fell back from GraphQL to WebSocket |
 | `friendship.update` | a follow, accept, or reject completes |
 | `groups.upsert` / `groups.update` | a group is created or changed |
@@ -112,7 +153,7 @@ sock.listen()   # blocks; Ctrl-C disconnects cleanly
 | `call` | an incoming call rings |
 | `call.outgoing` / `call.connected` / `call.answered` / `call.declined` | call lifecycle |
 
-## Sending and actions
+## Sending messages and actions
 
 ```python
 # Direct messages
@@ -157,7 +198,19 @@ sock.story_viewers(story_media_id)
 sock.delete_story(story_media_id)
 ```
 
-Actions return a plain dict (usually with an `ok` flag and the raw response) and emit the matching event.
+Each action returns a plain dict (usually with an `ok` flag and the raw response) and emits the matching
+event, so a handler on `sock.ev` sees the result whether it came from you or from another device.
+
+### Groups: why did a group not form?
+
+Instagram silently refuses to create a group when one of the invitees can't be added — a banned account, a
+block, or a restrictive message setting. `create_group(..., diagnose=True)` finds the culprit for you by
+retrying without each invitee in turn, and reports who was responsible:
+
+```python
+g = sock.create_group(["alice", "bob", "banned_user"], first_message="hi", diagnose=True)
+# -> {"ok": False, "blocked_by": ["banned_user"], ...}
+```
 
 ## Calls
 
@@ -187,27 +240,10 @@ def on_ring(ring):
     asyncio.get_event_loop().create_task(sock.answer_call(ring, audio_source="audio.wav"))
 ```
 
-## Staying connected
-
-With `keep_alive=True` (the default), `connect()` holds the receive and send pipes open, reconnects
-either one with backoff if it drops, refreshes the short-lived auth claim and resumes the message cursor
-on reconnect, and emits `connection.heartbeat` on a regular beat.
-
-```python
-sock.connect(dm_receive="dgw", send="ws", keep_alive=True)
-sock.health()   # {edge_chat, dgw_lightspeed, uptime_s, heartbeats, ...}
-```
-
-- `dm_receive`: `"dgw"` (default, lossless push) · `"iris"` (legacy) · `"both"`
-- `send`: `"ws"` (down the open pipe) · `"graphql"` (HTTP)
-- `presence`: subscribe to presence/typing (default `True`)
-- `keep_alive`: run the reconnect watchdog (default `True`)
-
 ## Running multiple accounts
 
-Several accounts sharing one User-Agent (or one IP) is a linking signal. `AccountManager` gives each
-account its own session, proxy, tokens, sockets, and a distinct, stable User-Agent (auto-derived unless
-you set one):
+Several accounts sharing one User-Agent (or one IP) is a linking signal. `AccountManager` gives each account
+its own session, proxy, tokens, sockets, and a distinct, stable User-Agent (auto-derived unless you set one):
 
 ```python
 from igrapiweb import AccountManager
@@ -224,9 +260,25 @@ mgr.fingerprints()   # {name: {ds_user_id, user_agent, proxy}}
 mgr.warnings         # any two accounts sharing a UA or proxy
 ```
 
-Give each account its own proxy for IP isolation. The identifying requests (page load, realtime, login)
-use the per-account User-Agent; the private-API calls use a minimal shared UA. Override with
-`user_agent=` on `make_ig_web_socket` or `mgr.add`.
+Give each account its own proxy for IP isolation. The identifying requests (page load, realtime, login) use
+the per-account User-Agent; the private-API calls use a minimal shared UA. Override with `user_agent=` on
+`make_ig_web_socket` or `mgr.add`.
+
+## Staying connected
+
+With `keep_alive=True` (the default), `connect()` holds the receive and send pipes open, reconnects either
+one with backoff if it drops, refreshes the short-lived auth claim, resumes the message cursor on reconnect,
+and emits `connection.heartbeat` on a regular beat.
+
+```python
+sock.connect(dm_receive="dgw", send="ws", keep_alive=True)
+sock.health()   # {edge_chat, dgw_lightspeed, uptime_s, heartbeats, ...}
+```
+
+- `dm_receive`: `"dgw"` (default, lossless push) · `"iris"` (legacy) · `"both"`
+- `send`: `"ws"` (down the open pipe) · `"graphql"` (HTTP)
+- `presence`: subscribe to presence/typing (default `True`)
+- `keep_alive`: run the reconnect watchdog (default `True`)
 
 ## Persistence and recovery
 
@@ -247,7 +299,22 @@ sock.set_login_provider(lambda: fresh_sessionid())   # -> sessionid str or {"ses
 sock.recover_session()
 ```
 
-With `keep_alive` on, the watchdog calls `recover_session()` after repeated auth failures.
+With `keep_alive` on, the watchdog calls `recover_session()` on its own after repeated auth failures.
+
+## Tips for staying unblocked
+
+Instagram watches web sessions for automation. A few habits keep an account healthy:
+
+- **One account, one proxy, one User-Agent.** `AccountManager` handles this; check `mgr.warnings` for
+  accidental sharing.
+- **Don't hammer.** Space out follows, likes, and comments the way a person would. Bursts of write actions
+  are the fastest way to a checkpoint.
+- **Persist and reuse state.** Load a saved `state.json` instead of logging in fresh every run, so you keep
+  the same cursors and cookies.
+- **Watch `session_health()`.** A `"walled"` result means Instagram wants a re-auth or a challenge — handle
+  it rather than retrying blindly.
+- **Match the proxy to the account's region.** A session from one country appearing on another country's IP
+  is an obvious flag.
 
 ## API reference
 
@@ -275,7 +342,7 @@ With `keep_alive` on, the watchdog calls `recover_session()` after repeated auth
 
 ## Disclaimer
 
-Not affiliated with, endorsed by, or sponsored by Instagram or Meta. It automates a personal account
+Not affiliated with, endorsed by, or sponsored by Instagram or Meta. igrapiweb automates a personal account
 through Instagram's own web endpoints; use it within Instagram's Terms of Use and applicable law. You are
 responsible for how you use it.
 
@@ -287,5 +354,8 @@ responsible for how you use it.
 
 Created by **ashsawtech** — Telegram [@ashsawtech](https://t.me/ashsawtech) · https://github.com/ashsawtech/igrapiweb
 
-The author credit in `igrapiweb/_attrib.py` is required by the license and is enforced at import; it must
-be kept intact.
+The author credit in `igrapiweb/_attrib.py` is required by the license and is verified when the package is
+imported: the credit strings are checked, an Ed25519 signature over them is validated, and matching
+integrity tokens are recomputed. Removing or altering the credit stops the library with a clear message.
+This is a stated license condition, not a hidden trap — restore the original `_attrib.py` from this
+repository to continue.
