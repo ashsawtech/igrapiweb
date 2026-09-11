@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """rpsignaling call-signaling messages: build offer/ICE frames by template-splice and parse inbound frames."""
 from __future__ import annotations
 import json, os, re

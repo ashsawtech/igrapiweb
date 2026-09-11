@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """WebRTC media plane via aiortc: a thin wrapper around RTCPeerConnection for IG call media (Opus audio)."""
 from __future__ import annotations
 from typing import List, Optional, Callable

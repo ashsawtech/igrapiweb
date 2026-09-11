@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """Call-setup HTTP: Zenon call mutations to ``/call/api/graphql/`` and TURN discovery."""
 from __future__ import annotations
 import json

@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """Instagram Web call subpackage (Zenon RTC): thrift codec, signaling, call-setup HTTP, and aiortc media."""
 from . import thrift, messages, http, signaling
 

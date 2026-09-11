@@ -9,7 +9,7 @@ description = "A pure-Python Instagram Web client — no browser, no emulator."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "igrapiweb" }]
+authors = [{ name = "ashsawtech" }]
 keywords = ["instagram", "web", "client", "realtime", "direct-messages"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

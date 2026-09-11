@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """Run several Instagram Web accounts side by side, each with its own cookies, proxy, and User-Agent."""
 from __future__ import annotations
 from typing import Dict, List, Optional

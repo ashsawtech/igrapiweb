@@ -282,3 +282,10 @@ responsible for how you use it.
 ## License
 
 [MIT](LICENSE)
+
+## Attribution
+
+Created by **ashsawtech** — https://github.com/ashsawtech/igrapiweb · Telegram: https://t.me/ashsawtech
+
+The author credit in `igrapiweb/_attrib.py` is required by the license and is enforced at import; it must
+be kept intact.

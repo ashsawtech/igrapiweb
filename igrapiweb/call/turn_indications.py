@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """Patch aioice's TURN client to relay media over Send/Data indications; import before any RTCPeerConnection."""
 import asyncio
 import time

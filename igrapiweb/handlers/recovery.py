@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 from __future__ import annotations
 from typing import Callable, Optional
 from ..session import cookies_from_sessionid

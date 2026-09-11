@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 from __future__ import annotations
 from .protocol import (IG_WEB_APP_ID, XDT_DIRECT_REALTIME_EVENT_DOC_ID, _UA, _GQL_UA, pick_user_agent,
                        build_web_connect, build_subscribe, build_publish, build_pingreq,

@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """rpsignaling DGW channel client: opens the WS channel, sends spliced offer/ICE frames, parses inbound."""
 from __future__ import annotations
 import json, threading, time, uuid

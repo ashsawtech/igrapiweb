@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """Self-contained Thrift Compact Protocol codec for IG call signaling on the rpsignaling DGW channel."""
 from __future__ import annotations
 from typing import List, Tuple, Any

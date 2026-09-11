@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """Social graph handler: follow management + rich profile lookup (pure-Python web private API)."""
 from __future__ import annotations
 from typing import List

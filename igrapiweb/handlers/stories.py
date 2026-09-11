@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 from __future__ import annotations
 from typing import List
 from ..webapi import web_api, rupload_photo, resolve_user_id

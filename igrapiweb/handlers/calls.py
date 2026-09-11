@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """Voice/video calls (Zenon RTC): rpsignaling for signaling, aiortc for media; call methods are async. Needs the `calls` extra."""
 from __future__ import annotations
 import threading

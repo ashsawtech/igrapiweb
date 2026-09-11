@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """Pure-web username/password login (instagram.com browser login, no mobile API); surfaces 2FA and checkpoints via callbacks."""
 from __future__ import annotations
 import base64

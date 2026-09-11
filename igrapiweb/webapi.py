@@ -1,3 +1,4 @@
+# igrapiweb · created by ashsawtech · https://github.com/ashsawtech/igrapiweb · attribution required (see _attrib.py)
 """Instagram web private-API helper (www.instagram.com/api/v1/…): follow/profile/reel/story via web session cookie + X-IG-App-ID."""
 from __future__ import annotations
 from typing import Dict, Optional
