@@ -54,6 +54,25 @@ class KeepAliveMixin:
         self._ka_cursors = s.get("cursors") or {}
         return True
 
+    def _cold_start(self, reason: str = "") -> None:
+        """Replay a fresh browser tab's pre-socket bootstrap before reopening a dropped channel:
+        refresh the web tokens (fb_dtsg / lsd / rev) and the X-IG-WWW-Claim, the way opening
+        instagram.com anew does, so the realtime handshake reconnects with live auth."""
+        now = time.time()
+        if now - getattr(self, "_ka_last_cold", 0.0) < 3.0:
+            return
+        self._ka_last_cold = now
+        try:
+            self._gql_token_bundle(force=True)              # fresh fb_dtsg / lsd / rev, like a page load
+        except Exception:
+            pass
+        try:
+            from ..webapi import ensure_claim
+            ensure_claim(self.cookies, proxy=self.proxy, user_agent=self.user_agent)
+        except Exception:
+            pass
+        self.ev.emit("connection.update", {"connection": "cold_start", "reason": reason})
+
     def _keepalive_loop(self, interval: float = 5.0, heartbeat: float = 30.0, max_backoff: float = 60.0):
         """Per-channel health check + reconnect with exponential backoff; emits connection.heartbeat."""
         self._ka_init()
@@ -70,6 +89,7 @@ class KeepAliveMixin:
                     self.ev.emit("connection.update", {"connection": "reconnecting", "pipe": "edge-chat",
                                                        "attempt": self._ka["edge_reconnects"]})
                     try:
+                        self._cold_start("edge-chat")       # fresh-tab auth refresh before reopening
                         self.edge.connect()
                         if self._want.get("presence"):
                             self.edge.subscribe("/pubsub")
@@ -94,6 +114,7 @@ class KeepAliveMixin:
                     self.ev.emit("connection.update", {"connection": "reconnecting", "pipe": "dgw-lightspeed",
                                                        "attempt": self._ka["dgw_reconnects"]})
                     try:
+                        self._cold_start("dgw-lightspeed")  # fresh-tab auth refresh before reopening
                         self._dgw_running = False
                         self.start_dm_realtime(thread_id=self._want.get("thread_id"))
                         self._dgw_running = True
